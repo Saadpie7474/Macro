@@ -3,161 +3,214 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dark Theme Calculator with Graphing</title>
+  <title>All-in-One Personal Website</title>
 
-  <!-- Plotly.js for graphing -->
+  <!-- External CSS for Plotly (for Graphing) -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
   <style>
-    /* Dark theme styling */
+    /* Dark Theme Styling */
     body {
       background-color: #1e1e1e;
       color: #fff;
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
-      flex-direction: column;
+      padding: 0;
     }
-    .calculator {
+    header {
       background-color: #2a2a2a;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      text-align: center;
     }
-    .calculator input {
-      width: 100%;
-      padding: 15px;
-      font-size: 24px;
-      border: none;
-      border-radius: 5px;
-      background-color: #333;
+    nav a {
       color: #fff;
-      text-align: right;
+      margin: 0 15px;
+      text-decoration: none;
     }
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 20px;
+    nav a:hover {
+      text-decoration: underline;
     }
-    .buttons button {
+    section {
       padding: 20px;
-      font-size: 18px;
-      border: none;
-      border-radius: 5px;
+      margin-top: 10px;
+      background-color: #2a2a2a;
+      border-radius: 8px;
+    }
+    h2, h3 {
+      color: #ff8c00;
+    }
+    button {
       background-color: #444;
       color: #fff;
+      padding: 10px;
+      border-radius: 5px;
       cursor: pointer;
     }
-    .buttons button:hover {
+    button:hover {
       background-color: #555;
     }
-    .graph {
-      margin-top: 40px;
-      width: 80%;
-      height: 400px;
-      background-color: #2a2a2a;
+    #weather, #news, #graph {
+      margin-top: 30px;
+      background-color: #333;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      padding: 15px;
+    }
+    .container {
+      width: 80%;
+      margin: 0 auto;
+    }
+    .card {
+      background-color: #444;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+    }
+    .card h4 {
+      color: #ff8c00;
     }
   </style>
 </head>
+
 <body>
+  <header>
+    <h1>My All-in-One Personal Website</h1>
+    <nav>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#blog">Blog</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#recipes">Recipes</a>
+      <a href="#travel">Travel Journal</a>
+      <a href="#music">Music Playlist</a>
+      <a href="#weather">Weather</a>
+      <a href="#news">News</a>
+    </nav>
+  </header>
 
-  <div class="calculator">
-    <input type="text" id="display" disabled />
-    <div class="buttons">
-      <button onclick="appendToDisplay('7')">7</button>
-      <button onclick="appendToDisplay('8')">8</button>
-      <button onclick="appendToDisplay('9')">9</button>
-      <button onclick="appendToDisplay('/')">/</button>
+  <div class="container">
+    <!-- Portfolio Section -->
+    <section id="portfolio">
+      <h2>My Portfolio</h2>
+      <div class="card">
+        <h4>Project 1</h4>
+        <p>Description of project 1</p>
+      </div>
+      <div class="card">
+        <h4>Project 2</h4>
+        <p>Description of project 2</p>
+      </div>
+    </section>
 
-      <button onclick="appendToDisplay('4')">4</button>
-      <button onclick="appendToDisplay('5')">5</button>
-      <button onclick="appendToDisplay('6')">6</button>
-      <button onclick="appendToDisplay('*')">*</button>
+    <!-- Blog Section -->
+    <section id="blog">
+      <h2>My Blog</h2>
+      <div class="card">
+        <h4>Blog Post 1</h4>
+        <p>Introduction to the first blog post...</p>
+        <button onclick="alert('View full post')">Read More</button>
+      </div>
+      <div class="card">
+        <h4>Blog Post 2</h4>
+        <p>Introduction to the second blog post...</p>
+        <button onclick="alert('View full post')">Read More</button>
+      </div>
+    </section>
 
-      <button onclick="appendToDisplay('1')">1</button>
-      <button onclick="appendToDisplay('2')">2</button>
-      <button onclick="appendToDisplay('3')">3</button>
-      <button onclick="appendToDisplay('-')">-</button>
+    <!-- Dashboard Section -->
+    <section id="dashboard">
+      <h2>My Dashboard</h2>
+      <button onclick="trackGoals()">Track My Goals</button>
+      <div id="goalStatus"></div>
+    </section>
 
-      <button onclick="appendToDisplay('0')">0</button>
-      <button onclick="appendToDisplay('.')">.</button>
-      <button onclick="calculate()">=</button>
-      <button onclick="appendToDisplay('+')">+</button>
-    </div>
-    <button onclick="clearDisplay()">Clear</button>
-    <button onclick="graphFunction()">Graph Function</button>
+    <!-- Recipe Book Section -->
+    <section id="recipes">
+      <h2>Recipe Book</h2>
+      <div class="card">
+        <h4>Recipe 1</h4>
+        <button onclick="showRecipe('recipe1')">View Recipe</button>
+      </div>
+      <div class="card">
+        <h4>Recipe 2</h4>
+        <button onclick="showRecipe('recipe2')">View Recipe</button>
+      </div>
+    </section>
+
+    <!-- Travel Journal Section -->
+    <section id="travel">
+      <h2>Travel Journal</h2>
+      <div class="card">
+        <h4>My Trip to Paris</h4>
+        <p>Details about my trip...</p>
+      </div>
+    </section>
+
+    <!-- Music Playlist Section -->
+    <section id="music">
+      <h2>My Music Playlist</h2>
+      <div class="card">
+        <h4>Playlist 1</h4>
+        <button onclick="alert('Listen on Spotify')">Play Now</button>
+      </div>
+    </section>
+
+    <!-- Weather Section -->
+    <section id="weather">
+      <h2>Weather</h2>
+      <div id="weatherData"></div>
+      <button onclick="fetchWeather()">Get Weather</button>
+    </section>
+
+    <!-- News Section -->
+    <section id="news">
+      <h2>Latest News</h2>
+      <div id="newsData"></div>
+      <button onclick="fetchNews()">Get Latest News</button>
+    </section>
+
+    <!-- Graph Section -->
+    <section id="graph">
+      <h2>My Progress Graph</h2>
+      <div id="graphContainer"></div>
+      <button onclick="createGraph()">Show Graph</button>
+    </section>
   </div>
 
-  <div id="graph" class="graph"></div>
-
   <script>
-    // Basic Calculator logic
-    function appendToDisplay(value) {
-      document.getElementById('display').value += value;
+    // Placeholder Functions for Interactivity
+
+    // 1. Goal Tracker for Dashboard
+    function trackGoals() {
+      document.getElementById('goalStatus').innerHTML = "Tracking goals: Fitness, Reading, Projects";
     }
 
-    function clearDisplay() {
-      document.getElementById('display').value = '';
-    }
-
-    function calculate() {
-      const display = document.getElementById('display');
-      try {
-        display.value = eval(display.value);  // Evaluate the expression
-      } catch (e) {
-        display.value = 'Error';
+    // 2. Recipe Display
+    function showRecipe(recipe) {
+      if (recipe === 'recipe1') {
+        alert("Recipe 1: Ingredients, Steps...");
+      } else if (recipe === 'recipe2') {
+        alert("Recipe 2: Ingredients, Steps...");
       }
     }
 
-    // Graphing functionality
-    function graphFunction() {
-      const expression = document.getElementById('display').value;
+    // 3. Weather Fetching (using a mock data for simplicity)
+    function fetchWeather() {
+      document.getElementById('weatherData').innerHTML = "Weather: Sunny, 25°C";
+    }
 
-      if (!expression) {
-        alert('Please enter a function to graph');
-        return;
-      }
+    // 4. News Fetching (using a mock data for simplicity)
+    function fetchNews() {
+      document.getElementById('newsData').innerHTML = "Latest News: Big Tech Update!";
+    }
 
-      try {
-        const xValues = [];
-        const yValues = [];
-        
-        for (let x = -10; x <= 10; x += 0.1) {
-          const y = eval(expression.replace('x', x));  // Evaluate the function at each x
-          xValues.push(x);
-          yValues.push(y);
-        }
-
-        const trace = {
-          x: xValues,
-          y: yValues,
-          mode: 'lines',
-          type: 'scatter',
-          line: {color: 'rgb(255, 165, 0)', width: 2}
-        };
-
-        const layout = {
-          title: `Graph of y = ${expression}`,
-          xaxis: { title: 'x' },
-          yaxis: { title: 'y' },
-          plot_bgcolor: '#2a2a2a',
-          paper_bgcolor: '#2a2a2a',
-          font: { color: 'white' }
-        };
-
-        const graphDiv = document.getElementById('graph');
-        Plotly.newPlot(graphDiv, [trace], layout);
-      } catch (e) {
-        alert('Invalid function! Please check your input.');
-      }
+    // 5. Create a Simple Graph (using Plotly.js)
+    function createGraph() {
+      var data = [{
+        x: [1, 2, 3, 4, 5],
+        y: [10, 11, 12, 13, 14],
+        type: 'scatter'
+      }];
+      Plotly.newPlot('graphContainer', data);
     }
   </script>
-
 </body>
 </html>
