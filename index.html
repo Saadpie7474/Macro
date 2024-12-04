@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Search without API Key</title>
+  <title>Image Search</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -34,18 +34,11 @@
     button:hover {
       background-color: #0056b3;
     }
-    .image-gallery {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+    iframe {
       margin-top: 30px;
-    }
-    .image-gallery img {
-      margin: 10px;
-      width: 200px;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      height: 600px;
+      border: none;
     }
   </style>
 </head>
@@ -55,30 +48,32 @@
   <input type="text" id="searchInput" placeholder="Enter search term...">
   <button id="searchButton">Search</button>
 
-  <div class="image-gallery" id="imageGallery"></div>
-
-  <!-- Google Custom Search Engine Embed -->
-  <script async src="https://cse.google.com/cse.js?cx=YOUR_CSE_ID"></script>
-
-  <div class="gcse-searchresults-only" data-queryParameterName="q"></div>
+  <iframe id="imageFrame" src="" style="display:none;"></iframe>
 
   <script>
     // Function to start image search
-    function startSearch() {
-      const query = document.getElementById('searchInput').value;
-      if (query.trim()) {
+    function startImageSearch() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (query) {
+        // Google Images search URL
         const searchURL = `https://www.google.com/search?hl=en&tbm=isch&q=${encodeURIComponent(query)}`;
-        window.open(searchURL, '_blank');  // Open Google image search in a new tab
+        
+        // Display iframe with Google Image Search results
+        const iframe = document.getElementById('imageFrame');
+        iframe.src = searchURL;
+        iframe.style.display = 'block';  // Make iframe visible
+      } else {
+        alert("Please enter a search term.");
       }
     }
 
     // Event listener for the search button
-    document.getElementById('searchButton').addEventListener('click', startSearch);
+    document.getElementById('searchButton').addEventListener('click', startImageSearch);
 
-    // Allow Enter key to trigger search
+    // Allow pressing "Enter" to trigger the search
     document.getElementById('searchInput').addEventListener('keypress', function(event) {
       if (event.key === 'Enter') {
-        startSearch();
+        startImageSearch();
       }
     });
   </script>
