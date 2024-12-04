@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macro Recorder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #181818;
+            color: #fff;
+        }
+        #macro-controls {
+            margin: 20px;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #FF0000;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #D50000;
+        }
+        #recording-info {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Macro Recorder</h1>
+
+    <div id="macro-controls">
+        <button class="button" id="start-recording">Start Recording</button>
+        <button class="button" id="stop-recording" disabled>Stop Recording</button>
+        <button class="button" id="play-macro" disabled>Play Macro</button>
+    </div>
+
+    <div id="recording-info">
+        <p>Recorded Actions: <span id="action-count">0</span></p>
+    </div>
+
+    <div id="macro-actions">
+        <h2>Recorded Actions:</h2>
+        <ul id="actions-list"></ul>
+    </div>
+
+    <script>
+        let actions = [];
+        let isRecording = false;
+
+        // Start recording actions
+        document.getElementById("start-recording").addEventListener("click", function () {
+            actions = []; // Clear previous actions
+            isRecording = true;
+            document.getElementById("start-recording").disabled = true;
+            document.getElementById("stop-recording").disabled = false;
+            document.getElementById("play-macro").disabled = true;
+            document.getElementById("action-count").innerText = actions.length;
+            document.getElementById("actions-list").innerHTML = ""; // Clear previous actions
+
+            // Record mouse clicks and key presses
+            window.addEventListener("click", recordAction);
+            window.addEventListener("keydown", recordAction);
+        });
+
+        // Stop recording actions
+        document.getElementById("stop-recording").addEventListener("click", function () {
+            isRecording = false;
+            document.getElementById("start-recording").disabled = false;
+            document.getElementById("stop-recording").disabled = true;
+            document.getElementById("play-macro").disabled = false;
+
+            // Stop event listeners
+            window.removeEventListener("click", recordAction);
+            window.removeEventListener("keydown", recordAction);
+        });
+
+        // Play recorded actions
+        document.getElementById("play-macro").addEventListener("click", function () {
+            let actionIndex = 0;
+
+            function playNextAction() {
+                if (actionIndex < actions.length) {
+                    let action = actions[actionIndex];
+                    // Simulate action after a short delay
+                    setTimeout(function () {
+                        if (action.type === "click") {
+                            console.log(`Simulated click at ${action.x}, ${action.y}`);
+                        } else if (action.type === "keydown") {
+                            console.log(`Simulated key press: ${action.key}`);
+                        }
+                        actionIndex++;
+                        playNextAction();
+                    }, 500); // Delay between actions
+                }
+            }
+
+            playNextAction();
+        });
+
+        // Record an action (mouse click or key press)
+        function recordAction(event) {
+            if (!isRecording) return;
+            let action;
+
+            if (event.type === "click") {
+                action = { type: "click", x: event.clientX, y: event.clientY };
+            } else if (event.type === "keydown") {
+                action = { type: "keydown", key: event.key };
+            }
+
+            if (action) {
+                actions.push(action);
+                updateActionList(action);
+                document.getElementById("action-count").innerText = actions.length;
+            }
+        }
+
+        // Update the UI with the recorded actions
+        function updateActionList(action) {
+            const actionList = document.getElementById("actions-list");
+            const li = document.createElement("li");
+
+            if (action.type === "click") {
+                li.innerText = `Click at (${action.x}, ${action.y})`;
+            } else if (action.type === "keydown") {
+                li.innerText = `Key Pressed: ${action.key}`;
+            }
+
+            actionList.appendChild(li);
+        }
+    </script>
+
+</body>
+</html>
