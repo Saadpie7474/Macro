@@ -3,79 +3,160 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Search</title>
+  <title>Dark Theme Calculator with Graphing</title>
+
+  <!-- Plotly.js for graphing -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
   <style>
+    /* Dark theme styling */
     body {
+      background-color: #1e1e1e;
+      color: #fff;
       font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
     }
-    h1 {
-      margin-top: 20px;
+    .calculator {
+      background-color: #2a2a2a;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     }
-    input[type="text"] {
-      padding: 10px;
-      width: 60%;
-      font-size: 16px;
-      margin-top: 20px;
-      border-radius: 5px;
-      border: 1px solid #ddd;
-    }
-    button {
-      padding: 10px 20px;
-      margin-left: 10px;
-      font-size: 16px;
-      background-color: #007bff;
-      color: white;
+    .calculator input {
+      width: 100%;
+      padding: 15px;
+      font-size: 24px;
       border: none;
       border-radius: 5px;
+      background-color: #333;
+      color: #fff;
+      text-align: right;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .buttons button {
+      padding: 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      background-color: #444;
+      color: #fff;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #0056b3;
+    .buttons button:hover {
+      background-color: #555;
     }
-    iframe {
-      margin-top: 30px;
+    .graph {
+      margin-top: 40px;
       width: 80%;
-      height: 600px;
-      border: none;
+      height: 400px;
+      background-color: #2a2a2a;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     }
   </style>
 </head>
 <body>
 
-  <h1>Search for Images</h1>
-  <input type="text" id="searchInput" placeholder="Enter search term...">
-  <button id="searchButton">Search</button>
+  <div class="calculator">
+    <input type="text" id="display" disabled />
+    <div class="buttons">
+      <button onclick="appendToDisplay('7')">7</button>
+      <button onclick="appendToDisplay('8')">8</button>
+      <button onclick="appendToDisplay('9')">9</button>
+      <button onclick="appendToDisplay('/')">/</button>
 
-  <iframe id="imageFrame" src="" style="display:none;"></iframe>
+      <button onclick="appendToDisplay('4')">4</button>
+      <button onclick="appendToDisplay('5')">5</button>
+      <button onclick="appendToDisplay('6')">6</button>
+      <button onclick="appendToDisplay('*')">*</button>
+
+      <button onclick="appendToDisplay('1')">1</button>
+      <button onclick="appendToDisplay('2')">2</button>
+      <button onclick="appendToDisplay('3')">3</button>
+      <button onclick="appendToDisplay('-')">-</button>
+
+      <button onclick="appendToDisplay('0')">0</button>
+      <button onclick="appendToDisplay('.')">.</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="appendToDisplay('+')">+</button>
+    </div>
+    <button onclick="clearDisplay()">Clear</button>
+    <button onclick="graphFunction()">Graph Function</button>
+  </div>
+
+  <div id="graph" class="graph"></div>
 
   <script>
-    // Function to start image search
-    function startImageSearch() {
-      const query = document.getElementById('searchInput').value.trim();
-      if (query) {
-        // Google Images search URL
-        const searchURL = `https://www.google.com/search?hl=en&tbm=isch&q=${encodeURIComponent(query)}`;
-        
-        // Display iframe with Google Image Search results
-        const iframe = document.getElementById('imageFrame');
-        iframe.src = searchURL;
-        iframe.style.display = 'block';  // Make iframe visible
-      } else {
-        alert("Please enter a search term.");
+    // Basic Calculator logic
+    function appendToDisplay(value) {
+      document.getElementById('display').value += value;
+    }
+
+    function clearDisplay() {
+      document.getElementById('display').value = '';
+    }
+
+    function calculate() {
+      const display = document.getElementById('display');
+      try {
+        display.value = eval(display.value);  // Evaluate the expression
+      } catch (e) {
+        display.value = 'Error';
       }
     }
 
-    // Event listener for the search button
-    document.getElementById('searchButton').addEventListener('click', startImageSearch);
+    // Graphing functionality
+    function graphFunction() {
+      const expression = document.getElementById('display').value;
 
-    // Allow pressing "Enter" to trigger the search
-    document.getElementById('searchInput').addEventListener('keypress', function(event) {
-      if (event.key === 'Enter') {
-        startImageSearch();
+      if (!expression) {
+        alert('Please enter a function to graph');
+        return;
       }
-    });
+
+      try {
+        const xValues = [];
+        const yValues = [];
+        
+        for (let x = -10; x <= 10; x += 0.1) {
+          const y = eval(expression.replace('x', x));  // Evaluate the function at each x
+          xValues.push(x);
+          yValues.push(y);
+        }
+
+        const trace = {
+          x: xValues,
+          y: yValues,
+          mode: 'lines',
+          type: 'scatter',
+          line: {color: 'rgb(255, 165, 0)', width: 2}
+        };
+
+        const layout = {
+          title: `Graph of y = ${expression}`,
+          xaxis: { title: 'x' },
+          yaxis: { title: 'y' },
+          plot_bgcolor: '#2a2a2a',
+          paper_bgcolor: '#2a2a2a',
+          font: { color: 'white' }
+        };
+
+        const graphDiv = document.getElementById('graph');
+        Plotly.newPlot(graphDiv, [trace], layout);
+      } catch (e) {
+        alert('Invalid function! Please check your input.');
+      }
+    }
   </script>
 
 </body>
