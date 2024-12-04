@@ -3,214 +3,109 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All-in-One Personal Website</title>
-
-  <!-- External CSS for Plotly (for Graphing) -->
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
+  <title>Simple Chat App</title>
   <style>
-    /* Dark Theme Styling */
     body {
-      background-color: #1e1e1e;
-      color: #fff;
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background-color: #f5f5f5;
     }
-    header {
-      background-color: #2a2a2a;
+    #chatContainer {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100%;
+    }
+    #messages {
+      overflow-y: auto;
+      flex-grow: 1;
       padding: 10px;
-      text-align: center;
+      background-color: #fff;
+      border-bottom: 2px solid #ddd;
     }
-    nav a {
-      color: #fff;
-      margin: 0 15px;
-      text-decoration: none;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    section {
-      padding: 20px;
-      margin-top: 10px;
-      background-color: #2a2a2a;
-      border-radius: 8px;
-    }
-    h2, h3 {
-      color: #ff8c00;
-    }
-    button {
-      background-color: #444;
-      color: #fff;
+    #messageInput {
+      display: flex;
       padding: 10px;
-      border-radius: 5px;
+      background-color: #fff;
+      border-top: 2px solid #ddd;
+    }
+    #messageInput input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    #messageInput button {
+      padding: 10px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #555;
-    }
-    #weather, #news, #graph {
-      margin-top: 30px;
-      background-color: #333;
-      border-radius: 10px;
-      padding: 15px;
-    }
-    .container {
-      width: 80%;
-      margin: 0 auto;
-    }
-    .card {
-      background-color: #444;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-    }
-    .card h4 {
-      color: #ff8c00;
+    #messageInput button:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
-
 <body>
-  <header>
-    <h1>My All-in-One Personal Website</h1>
-    <nav>
-      <a href="#portfolio">Portfolio</a>
-      <a href="#blog">Blog</a>
-      <a href="#dashboard">Dashboard</a>
-      <a href="#recipes">Recipes</a>
-      <a href="#travel">Travel Journal</a>
-      <a href="#music">Music Playlist</a>
-      <a href="#weather">Weather</a>
-      <a href="#news">News</a>
-    </nav>
-  </header>
 
-  <div class="container">
-    <!-- Portfolio Section -->
-    <section id="portfolio">
-      <h2>My Portfolio</h2>
-      <div class="card">
-        <h4>Project 1</h4>
-        <p>Description of project 1</p>
-      </div>
-      <div class="card">
-        <h4>Project 2</h4>
-        <p>Description of project 2</p>
-      </div>
-    </section>
-
-    <!-- Blog Section -->
-    <section id="blog">
-      <h2>My Blog</h2>
-      <div class="card">
-        <h4>Blog Post 1</h4>
-        <p>Introduction to the first blog post...</p>
-        <button onclick="alert('View full post')">Read More</button>
-      </div>
-      <div class="card">
-        <h4>Blog Post 2</h4>
-        <p>Introduction to the second blog post...</p>
-        <button onclick="alert('View full post')">Read More</button>
-      </div>
-    </section>
-
-    <!-- Dashboard Section -->
-    <section id="dashboard">
-      <h2>My Dashboard</h2>
-      <button onclick="trackGoals()">Track My Goals</button>
-      <div id="goalStatus"></div>
-    </section>
-
-    <!-- Recipe Book Section -->
-    <section id="recipes">
-      <h2>Recipe Book</h2>
-      <div class="card">
-        <h4>Recipe 1</h4>
-        <button onclick="showRecipe('recipe1')">View Recipe</button>
-      </div>
-      <div class="card">
-        <h4>Recipe 2</h4>
-        <button onclick="showRecipe('recipe2')">View Recipe</button>
-      </div>
-    </section>
-
-    <!-- Travel Journal Section -->
-    <section id="travel">
-      <h2>Travel Journal</h2>
-      <div class="card">
-        <h4>My Trip to Paris</h4>
-        <p>Details about my trip...</p>
-      </div>
-    </section>
-
-    <!-- Music Playlist Section -->
-    <section id="music">
-      <h2>My Music Playlist</h2>
-      <div class="card">
-        <h4>Playlist 1</h4>
-        <button onclick="alert('Listen on Spotify')">Play Now</button>
-      </div>
-    </section>
-
-    <!-- Weather Section -->
-    <section id="weather">
-      <h2>Weather</h2>
-      <div id="weatherData"></div>
-      <button onclick="fetchWeather()">Get Weather</button>
-    </section>
-
-    <!-- News Section -->
-    <section id="news">
-      <h2>Latest News</h2>
-      <div id="newsData"></div>
-      <button onclick="fetchNews()">Get Latest News</button>
-    </section>
-
-    <!-- Graph Section -->
-    <section id="graph">
-      <h2>My Progress Graph</h2>
-      <div id="graphContainer"></div>
-      <button onclick="createGraph()">Show Graph</button>
-    </section>
+  <div id="chatContainer">
+    <div id="messages"></div>
+    <div id="messageInput">
+      <input type="text" id="message" placeholder="Type a message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
   </div>
 
   <script>
-    // Placeholder Functions for Interactivity
+    const socket = new WebSocket('wss://echo.websocket.org'); // This uses an echo WebSocket server
+    const messagesDiv = document.getElementById('messages');
+    const messageInput = document.getElementById('message');
 
-    // 1. Goal Tracker for Dashboard
-    function trackGoals() {
-      document.getElementById('goalStatus').innerHTML = "Tracking goals: Fitness, Reading, Projects";
-    }
+    // Display incoming messages
+    socket.onmessage = (event) => {
+      const message = document.createElement('div');
+      message.textContent = `Friend: ${event.data}`;
+      messagesDiv.appendChild(message);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the latest message
+    };
 
-    // 2. Recipe Display
-    function showRecipe(recipe) {
-      if (recipe === 'recipe1') {
-        alert("Recipe 1: Ingredients, Steps...");
-      } else if (recipe === 'recipe2') {
-        alert("Recipe 2: Ingredients, Steps...");
+    // Handle connection open
+    socket.onopen = () => {
+      const message = document.createElement('div');
+      message.textContent = "You are connected. Start chatting!";
+      messagesDiv.appendChild(message);
+    };
+
+    // Handle error
+    socket.onerror = (error) => {
+      console.error('WebSocket Error: ', error);
+      const errorMsg = document.createElement('div');
+      errorMsg.textContent = 'Failed to connect to the WebSocket server';
+      messagesDiv.appendChild(errorMsg);
+    };
+
+    // Send message to server and display it locally
+    function sendMessage() {
+      const messageText = messageInput.value.trim();
+      if (messageText !== '') {
+        // Display the message in the local chat
+        const message = document.createElement('div');
+        message.textContent = `You: ${messageText}`;
+        messagesDiv.appendChild(message);
+
+        // Send the message to the WebSocket server
+        socket.send(messageText);
+
+        // Clear the input field
+        messageInput.value = '';
       }
     }
-
-    // 3. Weather Fetching (using a mock data for simplicity)
-    function fetchWeather() {
-      document.getElementById('weatherData').innerHTML = "Weather: Sunny, 25°C";
-    }
-
-    // 4. News Fetching (using a mock data for simplicity)
-    function fetchNews() {
-      document.getElementById('newsData').innerHTML = "Latest News: Big Tech Update!";
-    }
-
-    // 5. Create a Simple Graph (using Plotly.js)
-    function createGraph() {
-      var data = [{
-        x: [1, 2, 3, 4, 5],
-        y: [10, 11, 12, 13, 14],
-        type: 'scatter'
-      }];
-      Plotly.newPlot('graphContainer', data);
-    }
   </script>
+
 </body>
 </html>
