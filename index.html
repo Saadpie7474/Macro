@@ -1,194 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Macro Recorder with Effects</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #181818;
-            color: #fff;
-            padding: 20px;
-        }
-        #macro-controls {
-            margin-bottom: 20px;
-        }
-        .button {
-            padding: 10px 20px;
-            margin: 5px;
-            background-color: #FF0000;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .button:hover {
-            background-color: #D50000;
-        }
-        #recording-info {
-            margin-top: 20px;
-        }
-        #macro-actions {
-            margin-top: 20px;
-        }
-        .action-highlight {
-            background-color: #FF0000;
-            color: white;
-            padding: 5px;
-            margin: 2px 0;
-        }
-        #actions-list {
-            list-style-type: none;
-            padding-left: 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Search without API Key</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f9;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      width: 60%;
+      font-size: 16px;
+      margin-top: 20px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .image-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    .image-gallery img {
+      margin: 10px;
+      width: 200px;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  </style>
 </head>
 <body>
 
-    <h1>Macro Recorder with Scrolling & Effects</h1>
+  <h1>Search for Images</h1>
+  <input type="text" id="searchInput" placeholder="Enter search term...">
+  <button id="searchButton">Search</button>
 
-    <div id="macro-controls">
-        <button class="button" id="start-recording">Start Recording</button>
-        <button class="button" id="stop-recording" disabled>Stop Recording</button>
-        <button class="button" id="play-macro" disabled>Play Macro</button>
-    </div>
+  <div class="image-gallery" id="imageGallery"></div>
 
-    <div id="recording-info">
-        <p>Recorded Actions: <span id="action-count">0</span></p>
-    </div>
+  <!-- Google Custom Search Engine Embed -->
+  <script async src="https://cse.google.com/cse.js?cx=YOUR_CSE_ID"></script>
 
-    <div id="macro-actions">
-        <h2>Recorded Actions:</h2>
-        <ul id="actions-list"></ul>
-    </div>
+  <div class="gcse-searchresults-only" data-queryParameterName="q"></div>
 
-    <script>
-        let actions = [];
-        let isRecording = false;
+  <script>
+    // Function to start image search
+    function startSearch() {
+      const query = document.getElementById('searchInput').value;
+      if (query.trim()) {
+        const searchURL = `https://www.google.com/search?hl=en&tbm=isch&q=${encodeURIComponent(query)}`;
+        window.open(searchURL, '_blank');  // Open Google image search in a new tab
+      }
+    }
 
-        // Start recording actions
-        document.getElementById("start-recording").addEventListener("click", function () {
-            actions = []; // Clear previous actions
-            isRecording = true;
-            document.getElementById("start-recording").disabled = true;
-            document.getElementById("stop-recording").disabled = false;
-            document.getElementById("play-macro").disabled = true;
-            document.getElementById("action-count").innerText = actions.length;
-            document.getElementById("actions-list").innerHTML = ""; // Clear previous actions
+    // Event listener for the search button
+    document.getElementById('searchButton').addEventListener('click', startSearch);
 
-            // Record mouse clicks, key presses, and scroll events
-            window.addEventListener("click", recordAction);
-            window.addEventListener("keydown", recordAction);
-            window.addEventListener("wheel", recordScroll);
-            window.addEventListener("scroll", recordPageScroll);
-        });
-
-        // Stop recording actions
-        document.getElementById("stop-recording").addEventListener("click", function () {
-            isRecording = false;
-            document.getElementById("start-recording").disabled = false;
-            document.getElementById("stop-recording").disabled = true;
-            document.getElementById("play-macro").disabled = false;
-
-            // Stop event listeners
-            window.removeEventListener("click", recordAction);
-            window.removeEventListener("keydown", recordAction);
-            window.removeEventListener("wheel", recordScroll);
-            window.removeEventListener("scroll", recordPageScroll);
-        });
-
-        // Play recorded actions
-        document.getElementById("play-macro").addEventListener("click", function () {
-            let actionIndex = 0;
-
-            function playNextAction() {
-                if (actionIndex < actions.length) {
-                    let action = actions[actionIndex];
-
-                    // Apply effect (visual highlight) to simulate action execution
-                    let actionElement = document.querySelector(`#action-${actionIndex}`);
-                    actionElement.classList.add('action-highlight');
-                    setTimeout(() => {
-                        actionElement.classList.remove('action-highlight');
-                    }, 300);
-
-                    // Simulate action after a short delay
-                    setTimeout(function () {
-                        if (action.type === "click") {
-                            console.log(`Simulated click at ${action.x}, ${action.y}`);
-                        } else if (action.type === "keydown") {
-                            console.log(`Simulated key press: ${action.key}`);
-                        } else if (action.type === "scroll") {
-                            console.log(`Simulated scroll by ${action.deltaY} at position ${action.x}, ${action.y}`);
-                            window.scrollTo(action.x, action.y);
-                        } else if (action.type === "pageScroll") {
-                            console.log(`Simulated page scroll by ${action.deltaY}`);
-                            window.scrollBy(0, action.deltaY);
-                        }
-                        actionIndex++;
-                        playNextAction();
-                    }, 500); // Delay between actions
-                }
-            }
-
-            playNextAction();
-        });
-
-        // Record an action (mouse click, key press, or scroll)
-        function recordAction(event) {
-            if (!isRecording) return;
-            let action;
-
-            if (event.type === "click") {
-                action = { type: "click", x: event.clientX, y: event.clientY };
-            } else if (event.type === "keydown") {
-                action = { type: "keydown", key: event.key };
-            }
-
-            if (action) {
-                actions.push(action);
-                updateActionList(action);
-                document.getElementById("action-count").innerText = actions.length;
-            }
-        }
-
-        // Record scroll action (mouse wheel)
-        function recordScroll(event) {
-            if (!isRecording) return;
-            let action = { type: "scroll", x: window.scrollX, y: window.scrollY, deltaY: event.deltaY };
-            actions.push(action);
-            updateActionList(action);
-            document.getElementById("action-count").innerText = actions.length;
-        }
-
-        // Record page scroll action (using the window scroll event)
-        function recordPageScroll(event) {
-            if (!isRecording) return;
-            let action = { type: "pageScroll", deltaY: event.deltaY };
-            actions.push(action);
-            updateActionList(action);
-            document.getElementById("action-count").innerText = actions.length;
-        }
-
-        // Update the UI with the recorded actions
-        function updateActionList(action) {
-            const actionList = document.getElementById("actions-list");
-            const li = document.createElement("li");
-            li.id = `action-${actions.length - 1}`;
-
-            if (action.type === "click") {
-                li.innerText = `Click at (${action.x}, ${action.y})`;
-            } else if (action.type === "keydown") {
-                li.innerText = `Key Pressed: ${action.key}`;
-            } else if (action.type === "scroll") {
-                li.innerText = `Scroll by ${action.deltaY} at (${action.x}, ${action.y})`;
-            } else if (action.type === "pageScroll") {
-                li.innerText = `Page Scroll by ${action.deltaY}`;
-            }
-
-            actionList.appendChild(li);
-        }
-    </script>
+    // Allow Enter key to trigger search
+    document.getElementById('searchInput').addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        startSearch();
+      }
+    });
+  </script>
 
 </body>
 </html>
