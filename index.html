@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Macro Recorder</title>
+    <title>Macro Recorder with Effects</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #181818;
             color: #fff;
+            padding: 20px;
         }
         #macro-controls {
-            margin: 20px;
+            margin-bottom: 20px;
         }
         .button {
             padding: 10px 20px;
@@ -27,11 +28,24 @@
         #recording-info {
             margin-top: 20px;
         }
+        #macro-actions {
+            margin-top: 20px;
+        }
+        .action-highlight {
+            background-color: #FF0000;
+            color: white;
+            padding: 5px;
+            margin: 2px 0;
+        }
+        #actions-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Macro Recorder</h1>
+    <h1>Macro Recorder with Scrolling & Effects</h1>
 
     <div id="macro-controls">
         <button class="button" id="start-recording">Start Recording</button>
@@ -62,9 +76,11 @@
             document.getElementById("action-count").innerText = actions.length;
             document.getElementById("actions-list").innerHTML = ""; // Clear previous actions
 
-            // Record mouse clicks and key presses
+            // Record mouse clicks, key presses, and scroll events
             window.addEventListener("click", recordAction);
             window.addEventListener("keydown", recordAction);
+            window.addEventListener("wheel", recordScroll);
+            window.addEventListener("scroll", recordPageScroll);
         });
 
         // Stop recording actions
@@ -77,6 +93,8 @@
             // Stop event listeners
             window.removeEventListener("click", recordAction);
             window.removeEventListener("keydown", recordAction);
+            window.removeEventListener("wheel", recordScroll);
+            window.removeEventListener("scroll", recordPageScroll);
         });
 
         // Play recorded actions
@@ -86,12 +104,26 @@
             function playNextAction() {
                 if (actionIndex < actions.length) {
                     let action = actions[actionIndex];
+
+                    // Apply effect (visual highlight) to simulate action execution
+                    let actionElement = document.querySelector(`#action-${actionIndex}`);
+                    actionElement.classList.add('action-highlight');
+                    setTimeout(() => {
+                        actionElement.classList.remove('action-highlight');
+                    }, 300);
+
                     // Simulate action after a short delay
                     setTimeout(function () {
                         if (action.type === "click") {
                             console.log(`Simulated click at ${action.x}, ${action.y}`);
                         } else if (action.type === "keydown") {
                             console.log(`Simulated key press: ${action.key}`);
+                        } else if (action.type === "scroll") {
+                            console.log(`Simulated scroll by ${action.deltaY} at position ${action.x}, ${action.y}`);
+                            window.scrollTo(action.x, action.y);
+                        } else if (action.type === "pageScroll") {
+                            console.log(`Simulated page scroll by ${action.deltaY}`);
+                            window.scrollBy(0, action.deltaY);
                         }
                         actionIndex++;
                         playNextAction();
@@ -102,7 +134,7 @@
             playNextAction();
         });
 
-        // Record an action (mouse click or key press)
+        // Record an action (mouse click, key press, or scroll)
         function recordAction(event) {
             if (!isRecording) return;
             let action;
@@ -120,15 +152,38 @@
             }
         }
 
+        // Record scroll action (mouse wheel)
+        function recordScroll(event) {
+            if (!isRecording) return;
+            let action = { type: "scroll", x: window.scrollX, y: window.scrollY, deltaY: event.deltaY };
+            actions.push(action);
+            updateActionList(action);
+            document.getElementById("action-count").innerText = actions.length;
+        }
+
+        // Record page scroll action (using the window scroll event)
+        function recordPageScroll(event) {
+            if (!isRecording) return;
+            let action = { type: "pageScroll", deltaY: event.deltaY };
+            actions.push(action);
+            updateActionList(action);
+            document.getElementById("action-count").innerText = actions.length;
+        }
+
         // Update the UI with the recorded actions
         function updateActionList(action) {
             const actionList = document.getElementById("actions-list");
             const li = document.createElement("li");
+            li.id = `action-${actions.length - 1}`;
 
             if (action.type === "click") {
                 li.innerText = `Click at (${action.x}, ${action.y})`;
             } else if (action.type === "keydown") {
                 li.innerText = `Key Pressed: ${action.key}`;
+            } else if (action.type === "scroll") {
+                li.innerText = `Scroll by ${action.deltaY} at (${action.x}, ${action.y})`;
+            } else if (action.type === "pageScroll") {
+                li.innerText = `Page Scroll by ${action.deltaY}`;
             }
 
             actionList.appendChild(li);
