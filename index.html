@@ -33,7 +33,7 @@
     }
 
     #search-bar {
-      margin-top: 60px; /* Adjust to be below the header */
+      margin-top: 60px;
       padding: 10px;
       width: 250px;
       border-radius: 5px;
@@ -59,12 +59,61 @@
       width: 300px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       border-radius: 8px;
+      position: relative;
     }
 
     iframe {
       width: 100%;
       height: 200px;
       border-radius: 8px;
+    }
+
+    .like-dislike {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .like-dislike button {
+      padding: 5px 10px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .like-dislike .dislike {
+      background-color: #f44336;
+    }
+
+    .category-filter {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .category-filter select {
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    .comments-section {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+    }
+
+    .comment {
+      margin-bottom: 10px;
+    }
+
+    .comment input {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
 
     footer {
@@ -120,22 +169,58 @@
 
   <input type="text" id="search-bar" placeholder="Search for videos..." oninput="searchVideos()" />
 
+  <div class="category-filter">
+    <select id="category-select" onchange="filterCategory()">
+      <option value="all">All Categories</option>
+      <option value="music">Music</option>
+      <option value="gaming">Gaming</option>
+      <option value="tutorials">Tutorials</option>
+    </select>
+  </div>
+
   <section id="video-gallery">
     <h2>Video Gallery</h2>
 
-    <div class="video-item" data-title="Video 1">
+    <div class="video-item" data-title="Video 1" data-category="music">
       <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      <p>Video Title 1</p>
+      <p>Video Title 1 - Music</p>
+      <div class="like-dislike">
+        <button onclick="likeVideo(this)">Like</button>
+        <button class="dislike" onclick="dislikeVideo(this)">Dislike</button>
+      </div>
+      <div class="comments-section">
+        <div class="comment">
+          <input type="text" placeholder="Add a comment..." />
+        </div>
+      </div>
     </div>
     
-    <div class="video-item" data-title="Video 2">
+    <div class="video-item" data-title="Video 2" data-category="gaming">
       <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      <p>Video Title 2</p>
+      <p>Video Title 2 - Gaming</p>
+      <div class="like-dislike">
+        <button onclick="likeVideo(this)">Like</button>
+        <button class="dislike" onclick="dislikeVideo(this)">Dislike</button>
+      </div>
+      <div class="comments-section">
+        <div class="comment">
+          <input type="text" placeholder="Add a comment..." />
+        </div>
+      </div>
     </div>
 
-    <div class="video-item" data-title="Video 3">
+    <div class="video-item" data-title="Video 3" data-category="tutorials">
       <iframe src="https://www.youtube.com/embed/2Vv-BfVoq4g" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      <p>Video Title 3</p>
+      <p>Video Title 3 - Tutorials</p>
+      <div class="like-dislike">
+        <button onclick="likeVideo(this)">Like</button>
+        <button class="dislike" onclick="dislikeVideo(this)">Dislike</button>
+      </div>
+      <div class="comments-section">
+        <div class="comment">
+          <input type="text" placeholder="Add a comment..." />
+        </div>
+      </div>
     </div>
 
   </section>
@@ -172,6 +257,31 @@
           item.style.display = 'none'; // Hide the video item
         }
       });
+    }
+
+    // Filter by category
+    function filterCategory() {
+      const category = document.getElementById('category-select').value;
+      const videoItems = document.querySelectorAll('.video-item');
+
+      videoItems.forEach(item => {
+        if (category === 'all' || item.getAttribute('data-category') === category) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    // Like and dislike functions
+    function likeVideo(button) {
+      button.textContent = 'Liked';
+      button.disabled = true;
+    }
+
+    function dislikeVideo(button) {
+      button.textContent = 'Disliked';
+      button.disabled = true;
     }
   </script>
 </body>
