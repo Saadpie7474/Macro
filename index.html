@@ -3,75 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebRTC Video Chat</title>
+    <title>Convert Image to 8K</title>
     <style>
-        video {
-            width: 45%;
-            margin: 10px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        #startButton {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+
+        #imageContainer {
+            margin-top: 20px;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        #imageContainer img {
+            width: 100%;
+            height: auto;
+        }
+
+        .error {
+            color: red;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Convert Image to 8K Resolution</h1>
+        <input type="file" id="imageInput" accept="image/*">
+        <div id="imageContainer">
+            <p>Upload an image to convert it to 8K resolution.</p>
+        </div>
+        <div id="errorContainer" class="error"></div>
+    </div>
 
-<h1>Video Chat</h1>
-<video id="localVideo" autoplay muted></video>
-<video id="remoteVideo" autoplay></video>
-<br>
-<button id="startButton">Start Video Chat</button>
+    <script>
+        document.getElementById("imageInput").addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            const errorContainer = document.getElementById("errorContainer");
+            const imageContainer = document.getElementById("imageContainer");
 
-<script>
-    let localStream;
-    let remoteStream;
-    let peerConnection;
-    const startButton = document.getElementById('startButton');
-    const localVideo = document.getElementById('localVideo');
-    const remoteVideo = document.getElementById('remoteVideo');
-    
-    const iceServers = {
-        iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' } // STUN server for NAT traversal
-        ]
-    };
+            // Clear any previous errors or images
+            errorContainer.innerHTML = "";
+            imageContainer.innerHTML = "<p>Processing image...</p>";
 
-    // Start the video chat when the button is clicked
-    startButton.addEventListener('click', async () => {
-        try {
-            // Get user media (camera and microphone)
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            localVideo.srcObject = localStream;
-            // Initialize PeerConnection
-            peerConnection = new RTCPeerConnection(iceServers);
-            
-            // Add the local stream to the peer connection
-            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = new Image();
+                    img.onload = function () {
+                        // Check if image is large enough
+                        const canvas = document.createElement("canvas");
+                        const ctx = canvas.getContext("2d");
 
-            // When the remote stream is received, display it
-            peerConnection.ontrack = event => {
-                remoteStream = event.streams[0];
-                remoteVideo.srcObject = remoteStream;
-            };
+                        // Set canvas size to 8K (7680x4320 pixels)
+                        canvas.width = 7680;
+                        canvas.height = 4320;
 
-            // Create an offer and set the local description
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
-            // Send the offer to the remote peer (You can use WebSockets or any signaling server)
-            console.log("Offer created: ", offer);
+                        // Draw the image onto the canvas, scaling it to 8K resolution
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        } catch (error) {
-            console.error("Error starting video chat: ", error);
-        }
-    });
-</script>
+                        // Convert canvas to image data URL
+                        const imageData = canvas.toDataURL("image/png");
 
+                        // Create an image element to display the upscaled image
+                        const displayImage = new Image();
+                        displayImage.src = imageData;
+
+                        // Display the image in the container
+                        imageContainer.innerHTML = ''; // Clear any previous content
+                        imageContainer.appendChild(displayImage);
+                    };
+
+                    img.onerror = function() {
+                        errorContainer.innerHTML = "Error loading the image. Please try again.";
+                    };
+
+                    img.src = e.target.result;
+                };
+
+                reader.onerror = function() {
+                    errorContainer.innerHTML = "Error reading the file. Please try again.";
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                errorContainer.innerHTML = "Please upload a valid image file.";
+            }
+        });
+    </script>
 </body>
 </html>
