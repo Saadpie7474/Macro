@@ -3,68 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera Access</title>
+    <title>WebRTC Video Chat</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background-color: #1e1e1e;
-            color: #fff;
-        }
-
         video {
-            width: 100%;
-            max-width: 600px;
-            border: 2px solid #0dcaf0;
-            border-radius: 10px;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #0dcaf0;
-            border: none;
+            width: 45%;
+            margin: 10px;
+            border: 2px solid #ccc;
             border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.3s;
         }
-
-        button:hover {
-            background-color: #0a99c2;
+        #startButton {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <h1>Access Your Camera</h1>
-    <video id="video" autoplay></video>
-    <br>
-    <button id="startButton">Start Camera</button>
+<h1>Video Chat</h1>
+<video id="localVideo" autoplay muted></video>
+<video id="remoteVideo" autoplay></video>
+<br>
+<button id="startButton">Start Video Chat</button>
 
-    <script>
-        // Get the video element
-        const video = document.getElementById('video');
-        const startButton = document.getElementById('startButton');
+<script>
+    let localStream;
+    let remoteStream;
+    let peerConnection;
+    const startButton = document.getElementById('startButton');
+    const localVideo = document.getElementById('localVideo');
+    const remoteVideo = document.getElementById('remoteVideo');
+    
+    const iceServers = {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' } // STUN server for NAT traversal
+        ]
+    };
 
-        // Function to start the camera
-        async function startCamera() {
-            try {
-                // Request camera access from the user
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                // Set the video source to the camera stream
-                video.srcObject = stream;
-                startButton.disabled = true; // Disable the button after starting the camera
-            } catch (error) {
-                console.error("Error accessing the camera: ", error);
-                alert("Could not access the camera. Please grant permission.");
-            }
+    // Start the video chat when the button is clicked
+    startButton.addEventListener('click', async () => {
+        try {
+            // Get user media (camera and microphone)
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            localVideo.srcObject = localStream;
+            // Initialize PeerConnection
+            peerConnection = new RTCPeerConnection(iceServers);
+            
+            // Add the local stream to the peer connection
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+            // When the remote stream is received, display it
+            peerConnection.ontrack = event => {
+                remoteStream = event.streams[0];
+                remoteVideo.srcObject = remoteStream;
+            };
+
+            // Create an offer and set the local description
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            // Send the offer to the remote peer (You can use WebSockets or any signaling server)
+            console.log("Offer created: ", offer);
+
+        } catch (error) {
+            console.error("Error starting video chat: ", error);
         }
-
-        // Event listener to start the camera when the button is clicked
-        startButton.addEventListener('click', startCamera);
-    </script>
+    });
+</script>
 
 </body>
 </html>
