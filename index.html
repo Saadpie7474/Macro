@@ -94,6 +94,15 @@
     .dark-mode footer {
       background-color: #444;
     }
+
+    #search-bar {
+      padding: 10px;
+      margin-top: 20px;
+      width: 250px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
@@ -107,20 +116,22 @@
     <button class="mode-toggle" onclick="toggleMode()">🌙 Dark Mode</button>
   </header>
 
+  <input type="text" id="search-bar" placeholder="Search for videos..." oninput="searchVideos()" />
+
   <section id="video-gallery">
     <h2>Video Gallery</h2>
 
-    <div class="video-item">
+    <div class="video-item" data-title="Video 1">
       <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       <p>Video Title 1</p>
     </div>
     
-    <div class="video-item">
+    <div class="video-item" data-title="Video 2">
       <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       <p>Video Title 2</p>
     </div>
 
-    <div class="video-item">
+    <div class="video-item" data-title="Video 3">
       <iframe src="https://www.youtube.com/embed/2Vv-BfVoq4g" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       <p>Video Title 3</p>
     </div>
@@ -144,6 +155,21 @@
       } else {
         modeButton.textContent = '🌙 Dark Mode';
       }
+    }
+
+    // Search functionality
+    function searchVideos() {
+      const searchQuery = document.getElementById('search-bar').value.toLowerCase();
+      const videoItems = document.querySelectorAll('.video-item');
+
+      videoItems.forEach(item => {
+        const title = item.getAttribute('data-title').toLowerCase();
+        if (title.includes(searchQuery)) {
+          item.style.display = 'block'; // Show the video item
+        } else {
+          item.style.display = 'none'; // Hide the video item
+        }
+      });
     }
   </script>
 </body>
